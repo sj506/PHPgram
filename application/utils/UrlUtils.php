@@ -12,8 +12,7 @@ function getUrlPaths()
 
 function getMethod()
 {
-    $headers = getallheaders();
-    return $headers['Accept'];
+    return $_SERVER['REQUEST_METHOD'];
 }
 
 function isGetOne()

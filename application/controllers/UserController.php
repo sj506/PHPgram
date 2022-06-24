@@ -1,8 +1,6 @@
 <?php
 namespace application\controllers;
 
-require_once 'application/utils/UrlUtils.php';
-
 class UserController extends Controller
 {
     public function signin()
@@ -12,12 +10,25 @@ class UserController extends Controller
 
     public function signup()
     {
-        $method = getMethod();
-        switch ($method) {
+        // if (getMethod() === _GET) {
+        //     return 'user/signup.php';
+        // } elseif (getMethod() === _POST) {
+        //     return 'redirect:signin';
+        // }
+        switch (getMethod()) {
             case _GET:
-                return;
+                return 'user/signup.php';
             case _POST:
-                return;
+                $param = [
+                    'email' => $_POST['email'],
+                    'pw' => $_POST['pw'],
+                    'nm' => $_POST['nm'],
+                ];
+                $param['pw'] = password_hash($param['upw'], PASSWORD_BCRYPT);
+
+                $this->model->insUser($param);
+
+                return 'redirect:signin';
         }
     }
 }

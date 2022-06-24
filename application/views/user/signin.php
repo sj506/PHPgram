@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
-<?php include_once "application/views/template/head.php"; ?>
+<?php include_once 'application/views/template/head.php'; ?>
 <body class="h-full container-center">
     <div>
         <h1>로그인</h1>
-        <form action="@{signin}" method="post">
+        <form action="signup" method="post">
             <div><input type="email" name="email" placeholder="email" autofocus required></div>
             <div><input type="password" name="pw" placeholder="password" required></div>
             <div>
