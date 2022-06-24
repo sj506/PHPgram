@@ -17,7 +17,7 @@ class UserModel extends Model
         $stmt->bindValue(':pw', $param['pw']);
         $stmt->bindValue(':nm', $param['nm']);
         $stmt->execute();
-        return $stmt->rowCount();
+        return $stmt->rowCount(); // 행이 몇개 넘어오는지 세아려줌
     }
     public function selUser(&$param)
     {

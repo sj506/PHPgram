@@ -12,7 +12,7 @@ function getUrlPaths()
 
 function getMethod()
 {
-    return $_SERVER['REQUEST_METHOD'];
+    return $_SERVER['REQUEST_METHOD']; // post get인지 알려줌
 }
 
 function isGetOne()
@@ -23,4 +23,9 @@ function isGetOne()
         return $urlPaths[2];
     }
     return false;
+}
+
+function getParam()
+{
+    return isset($_GET['email']) ? $_GET['email'] : '';
 }
