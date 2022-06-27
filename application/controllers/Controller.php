@@ -4,7 +4,7 @@ namespace application\controllers;
 class Controller
 {
     protected $model;
-    private static $needLoginUrlArr = [];
+    private static $needLoginUrlArr = ['feed'];
 
     public function __construct($action, $model)
     {
@@ -18,6 +18,7 @@ class Controller
                 !isset($_SESSION[_LOGINUSER])
             ) {
                 echo '권한이 없습니다.';
+                $this->getView('redirect:/user/signin');
                 exit();
             }
         }

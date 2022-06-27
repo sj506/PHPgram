@@ -22,7 +22,3 @@
     </div>
 </body>
 </html>
-
-<?php
-// isset($_GET['email']) ? $_GET['email'] : '';
-?>
