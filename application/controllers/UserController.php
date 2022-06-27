@@ -1,6 +1,18 @@
 <?php
 namespace application\controllers;
 
+// * 값을 저장하는 방법
+
+// 변수 , 컬렉션
+
+// 변수 : 1개 값 저장
+// 컬렉션 : 객체, 배열 등등 여러개 값 저장
+
+// 컬렉션 中 시퀀스 유무
+
+// 시퀀스O : 배열 등. 순서가 중요함 반복문을 쓸 수 있음
+// 시퀀스X : 쿼리스트링 등등
+
 class UserController extends Controller
 {
     public function signin()
@@ -26,7 +38,9 @@ class UserController extends Controller
                     return "redirect:signin?email={$email}&err";
                 }
 
-                $_SESSION[_LOGINUSER] = $dbUser;
+                $dbUser->pw = null;
+                $dbUser->regdt = null;
+                $this->flash(_LOGINUSER, $dbUser);
 
                 // print_r($_SESSION[_LOGINUSER]);
 
@@ -57,5 +71,10 @@ class UserController extends Controller
 
                 return 'redirect:signin';
         }
+    }
+    public function logout()
+    {
+        $this->flash(_LOGINUSER);
+        return 'redirect:/user/signin';
     }
 }
