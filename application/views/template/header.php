@@ -21,11 +21,14 @@
                         </div>
                         <div class="d-inline-flex dropdown">
                             <a href="#" role="button" id="navDropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false" class="header_profile">
-                            <div class="circleimg h30 w30">
+                            <!-- <div class="circleimg h30 w30">
                                 <img src="/static/img/profile/
-                                 <?= $_SESSION[_LOGINUSER]->iuser ?>
-                                /<?= $_SESSION[_LOGINUSER]->mainimg ?>"
+                                 $_SESSION[_LOGINUSER]->iuser
+                                /$_SESSION[_LOGINUSER]->mainimg"
                                 onerror="this.onerror=null;this.src='/static/img/profile/defaultProfileImg_100.png'" >
+                            </div> -->
+                                <div class="circleimg h30 w30">
+                                <img src=<?= getProfileImg() ?> >
                             </div>
                             프로필 이미지
                             </a>
@@ -46,3 +49,20 @@
         </div>
     </div>
 </header>
+
+<!-- New Feed Create Modal -->
+<div class="modal fade" id="newFeedModal" tabindex="-1" aria-labelledby="newFeedModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
+        <div class="modal-content" id="newFeedModalContent">
+            <div class="modal-header">
+                <h5 class="modal-title" id="newFeedModalLabel">새 게시물 만들기</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="id-modal-body"></div>
+        </div>
+            <form class="d-none">
+                <input type="file" accept="image/*" name="imgs" multiple>
+            </form>
+        </div>
+    </div>
+</div>

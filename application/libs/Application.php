@@ -2,6 +2,7 @@
 namespace application\libs;
 
 require_once 'application/utils/UrlUtils.php';
+require_once 'application/utils/SessionUtils.php';
 //모든 파일에서 require_once 하고싶은 것이 있다면 여기 쓰면 됨
 
 class Application
