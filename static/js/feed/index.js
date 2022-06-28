@@ -6,11 +6,14 @@
         const body = modal.querySelector('#id-modal-body');
         const frmElem = modal.querySelector('form');
 
+        const closeBtn = modal.querySelector('.btn-close');
+
         //이미지 값이 변하면
         frmElem.imgs.addEventListener('change', function (e) {
             // form 태그는 자식에게 접근할 때 . 으로도 가능
             if (e.target.files.length > 0) {
                 // 이미지를 1개 이상 선택했다
+
                 body.innerHTML = `
                     <div>
                         <div class="d-flex flex-md-row">
@@ -27,6 +30,15 @@
                 `;
                 const imgElem = body.querySelector('#id-img');
 
+                closeBtn.addEventListener('click', () => {
+                    frmElem.reset();
+                });
+
+                const fade = document.querySelector('#newFeedModal');
+                fade.addEventListener('click', () => {
+                    frmElem.reset();
+                });
+
                 const imgSource = e.target.files[0];
                 const reader = new FileReader();
                 reader.readAsDataURL(imgSource);
@@ -40,20 +52,19 @@
 
                     const fData = new FormData();
                     for (let i = 0; i < files.length; i++) {
-                        fData.append('imgs', files[i]);
+                        fData.append('imgs[]', files[i]);
                     }
                     fData.append('ctnt', body.querySelector('textarea').value);
                     fData.append('location', body.querySelector('input[type=text]').value);
 
-                    fetch('/feed/reg', {
+                    fetch('/feed/rest', {
                         method: 'post',
                         body: fData,
                     })
                         .then((res) => res.json())
                         .then((myJson) => {
-                            const closeBtn = modal.querySelector('.btn-close');
+                            console.log(myJson);
                             closeBtn.click();
-
                             if (feedObj && myJson.result) {
                                 feedObj.refreshList();
                             }
