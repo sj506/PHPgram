@@ -5,8 +5,7 @@
         const modal = document.querySelector('#newFeedModal');
         const body = modal.querySelector('#id-modal-body');
         const frmElem = modal.querySelector('form');
-
-        const closeBtn = modal.querySelector('.btn-close');
+        const btnClose = modal.querySelector('.btn-close');
 
         //이미지 값이 변하면
         frmElem.imgs.addEventListener('change', function (e) {
@@ -30,7 +29,7 @@
                 `;
                 const imgElem = body.querySelector('#id-img');
 
-                closeBtn.addEventListener('click', () => {
+                btnClose.addEventListener('click', () => {
                     frmElem.reset();
                 });
 
@@ -64,9 +63,9 @@
                         .then((res) => res.json())
                         .then((myJson) => {
                             console.log(myJson);
-                            closeBtn.click();
-                            if (feedObj && myJson.result) {
-                                feedObj.refreshList();
+
+                            if (myJson.result) {
+                                btnClose.click();
                             }
                         });
                 });
@@ -85,4 +84,99 @@
             body.appendChild(selFromComBtn);
         });
     }
+
+    const feedObj = {
+        limit: 20,
+        itemLength: 0,
+        currentPage: 1,
+        loadingElem: document.querySelector('.loading'),
+
+        ContainerElem: document.querySelector('#item_container'),
+
+        getFeedList: function () {
+            this.showLoading();
+            const param = {
+                page: this.currentPage++,
+            };
+            fetch('/feed/rest' + encodeQueryString(param))
+                .then((res) => res.json())
+                .then((list) => {
+                    // list 객체로 싹 받아옴
+                    console.log(list);
+                    this.makeFeedList(list);
+                })
+                .catch((e) => {
+                    console.error(e);
+                    this.hideLoading();
+                });
+        },
+        showLoading: function () {
+            this.loadingElem.classList.remove('d-none');
+        },
+        hideLoading: function () {
+            this.loadingElem.classList.add('d-none');
+        },
+        makeFeedList: function (list) {
+            if (list.length !== 0) {
+                list.forEach((item) => {
+                    const divItem = this.makeFeedItem(item);
+                    this.ContainerElem.appendChild(divItem);
+                });
+                this.hideLoading();
+            }
+        },
+        makeFeedItem: function (item) {
+            const divContainer = document.createElement('div');
+            divContainer.className = 'item mt-3 mb-3 itemBox';
+
+            // divContainer.innerHTML = `<img src = /static/img/feed/${item.ifeed}/${item.img} style="width: 300px; heigh: 300px">`;
+
+            const regDtInfo = getDateTimeInfo(item.regdt);
+            const divTop = document.createElement('div');
+            divTop.className = 'd-flex flex-column ps-3 pe-3 feedBox';
+
+            const writerImg = `<img src="/static/img/profile/${item.iuser}/${item.mainimg}" 
+            onerror = 'this.error = null; this.src="/static/img/profile/defaultProfileImg_100.png"'>
+            `;
+
+            divTop.innerHTML = `
+            <div class="d-flex flex-column justify-content-center">
+            <div class="circleimg h30 w30">${writerImg}</div>
+            <div class="p-3 flexfrow-1">
+            <div>
+            <span class="pointer" onclick="moveToprofile(${item.iuser})">${item.writer}
+            </span> - ${regDtInfo}</div>
+            <div>${item.location === null ? '' : item.location}</div>
+            </div>
+            </div>
+            `;
+
+            divContainer.appendChild(divTop);
+
+            const divImgSwiper = document.createElement('div');
+            divContainer.appendChild(divImgSwiper);
+            divImgSwiper.className = 'swiper item_img';
+            divImgSwiper.innerHTML = `
+                <div class="swiper-wrapper"></div>
+                <div class="swiper-pagination"></div>
+                <div class="swiper-button-prev"></div>
+                <div class="swiper-button-next"></div>
+            `;
+            const divSwiperWrapper = divImgSwiper.querySelector('.swiper-wrapper');
+
+            //TODO : imgList forEach 돌릴 예정
+            const imgObj = item.imgList[0];
+            const divSwiperSlide = document.createElement('div');
+            divSwiperWrapper.appendChild(divSwiperSlide);
+            divSwiperSlide.classList.add('swiper-slide');
+
+            const img = document.createElement('img');
+            divSwiperSlide.appendChild(img);
+            img.className = 'w614';
+            img.src = `/static/img/feed/${item.ifeed}/${imgObj.img}`;
+
+            return divContainer;
+        },
+    };
+    feedObj.getFeedList();
 })();

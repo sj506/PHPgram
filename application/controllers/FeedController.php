@@ -6,8 +6,8 @@ class FeedController extends Controller
     public function index()
     {
         $this->addAttribute(_JS, ['feed/index']);
+        $this->addAttribute(_CSS, ['feed/index']);
         $this->addAttribute(_MAIN, $this->getView('feed/index.php'));
-        // print $this->getView('feed/index.php'); application/views/feed/index.php
         return 'template/t1.php';
     }
 
@@ -18,37 +18,52 @@ class FeedController extends Controller
                 if (!is_array($_FILES) || !isset($_FILES['imgs'])) {
                     return ['result' => 0];
                 }
-                // $imgCount = count($_FILES['imgs']['name']);
-
+                $iuser = getIuser();
                 $param = [
                     'location' => $_POST['location'],
                     'ctnt' => $_POST['ctnt'],
-                    'iuser' => getIuser(),
+                    'iuser' => $iuser,
                 ];
                 $ifeed = $this->model->insFeed($param);
 
+                $paramImg = ['ifeed' => $ifeed];
                 foreach ($_FILES['imgs']['name'] as $key => $originFileNm) {
                     $saveDirectory = _IMG_PATH . '/feed/' . $ifeed;
                     if (!is_dir($saveDirectory)) {
                         mkdir($saveDirectory, 0777, true);
                     }
                     $tempName = $_FILES['imgs']['tmp_name'][$key];
-                    $randomFileNm = getRandomFileNM($originFileNm);
+                    $randomFileNm = getRandomFileNm($originFileNm);
                     if (
                         move_uploaded_file(
                             $tempName,
-                            $saveDirectory . '/test.' . $randomFileNm
+                            $saveDirectory . '/' . $randomFileNm
                         )
                     ) {
-                        $param1 = [
-                            'ifeed' => $ifeed,
-                            'img' => $randomFileNm,
-                        ];
-                        $this->model->insFeedImg($param1);
+                        //chmod($saveDirectory . "/test." . $ext, octdec("0666"));
+                        //chmod("C:/Apache24/PHPgram/static/img/profile/1/test." . $ext, 0755);
+                        $paramImg['img'] = $randomFileNm;
+                        $this->model->insFeedImg($paramImg);
                     }
                 }
+                return ['result' => 1];
 
-            // return ['result' => $ifeed];
+            case _GET:
+                $page = 1;
+                if (isset($_GET['page'])) {
+                    $page = intval($_GET['page']);
+                }
+                $startIdx = ($page - 1) * _FEED_ITEM_CNT;
+                $param = [
+                    'startIdx' => $startIdx,
+                    'iuser' => getIuser(),
+                ];
+                $list = $this->model->selFeedList($param);
+
+                foreach ($list as $item) {
+                    $item->imgList = $this->model->selFeedImgList($item);
+                }
+                return $list;
         }
     }
 }

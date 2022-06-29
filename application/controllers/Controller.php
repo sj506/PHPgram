@@ -25,7 +25,7 @@ class Controller
 
         $this->model = $model;
         $view = $this->$action();
-        if (empty($view)) {
+        if (empty($view) && gettype($view) === 'string') {
             echo 'Controller 에러 발생';
             exit();
         }
@@ -35,6 +35,7 @@ class Controller
         } elseif (gettype($view) === 'object' || gettype($view) === 'array') {
             header('Content-Type:application/json');
             echo json_encode($view);
+            // 객체로 제이슨 넘겨줌
         }
     }
     private function chkLoginUrl()

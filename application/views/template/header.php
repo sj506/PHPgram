@@ -1,8 +1,10 @@
 <header class="container py-3">
+    <link rel="stylesheet" href="/static/css/common.css">
+
     <div id="globalConst">
         <div class="d-flex flex-column flex-md-row align-items-center">
                 <div class="d-inline-flex flex-grow-1 flex-shrink-0">
-                    <a href="/feed/index">Home</a>
+                    <a href="/feed/index"><img src="/static/svg/Instagram_logo.svg" width="100px"></a>
                 </div>
                 <div class="d-inline-flex flex-grow-1 flex-shrink-0">
                 </div>
