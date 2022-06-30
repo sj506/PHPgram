@@ -5,8 +5,16 @@ class FeedController extends Controller
 {
     public function index()
     {
-        $this->addAttribute(_JS, ['feed/index']);
-        $this->addAttribute(_CSS, ['feed/index']);
+        $this->addAttribute(_JS, [
+            'feed/index',
+            'https://unpkg.com/swiper@8/swiper-bundle.min.js',
+        ]);
+
+        $this->addAttribute(_CSS, [
+            'feed/index',
+            'https://unpkg.com/swiper@8/swiper-bundle.min.css',
+        ]);
+
         $this->addAttribute(_MAIN, $this->getView('feed/index.php'));
         return 'template/t1.php';
     }
@@ -16,7 +24,7 @@ class FeedController extends Controller
         switch (getMethod()) {
             case _POST:
                 if (!is_array($_FILES) || !isset($_FILES['imgs'])) {
-                    return ['result' => 0];
+                    return [_RESULT => 0];
                 }
                 $iuser = getIuser();
                 $param = [
@@ -46,7 +54,7 @@ class FeedController extends Controller
                         $this->model->insFeedImg($paramImg);
                     }
                 }
-                return ['result' => 1];
+                return [_RESULT => 1];
 
             case _GET:
                 $page = 1;
@@ -64,6 +72,26 @@ class FeedController extends Controller
                     $item->imgList = $this->model->selFeedImgList($item);
                 }
                 return $list;
+        }
+    }
+    public function fav()
+    {
+        $urlPaths = getUrlPaths();
+        if (!isset($urlPaths[2])) {
+            exit();
+        }
+
+        $param = [
+            'ifeed' => intval($urlPaths[2]),
+            'iuser' => getIuser(),
+        ];
+        switch (getMethod()) {
+            case _POST:
+                $result = $this->model->insFeedFav($param);
+                return [_RESULT => $result];
+            case _DELETE:
+                $result = $this->model->delFeedFav($param);
+                return [_RESULT => $result];
         }
     }
 }
