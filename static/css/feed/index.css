@@ -1,0 +1,71 @@
+main {
+    background-color: rgb(250, 250, 250);
+    --font: Arial;
+}
+/* 네이밍을 아래 w100p_mw614로 변경 .item_container_parent { width: 100%; max-width: 614px; } */
+.w100p_mw614 {
+    width: 100%;
+    max-width: 614px;
+    max-height: 100%;
+    object-fit: contain;
+}
+.size_box_100 {
+    position: relative;
+    height: 100px;
+}
+#item_container > .item {
+    border: 1px solid #dfdfdf;
+    border-radius: 8px;
+    background-color: #fff;
+    font-family: var(--font);
+    height: auto;
+}
+.fas {
+    color: #ea4040;
+}
+
+.bold-blue {
+    color: #3596f9;
+    font-weight: bold;
+}
+
+.bold-red {
+    color: #e44753;
+    font-weight: bold;
+}
+
+.profile-modal {
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(0, 0, 0, 0.397);
+}
+.blue {
+    color: #3596f9;
+}
+.red {
+    color: #e44753;
+}
+._modal-title {
+    height: 80px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+._modal-body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.not-border {
+    border-bottom: 0 !important;
+}
+
+._modal-footer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 0;
+}
