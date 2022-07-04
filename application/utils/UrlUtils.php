@@ -1,5 +1,10 @@
 <?php
 
+function getJson()
+{
+    return json_decode(file_get_contents('php://input'), true);
+}
+
 function getUrl()
 {
     return isset($_GET['url']) ? rtrim($_GET['url'], '/') : '';

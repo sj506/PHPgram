@@ -3,6 +3,7 @@ namespace application\controllers;
 
 class Controller
 {
+    protected $ctx;
     protected $model;
     private static $needLoginUrlArr = ['feed', 'user/feedwin'];
 
@@ -17,9 +18,9 @@ class Controller
                 strpos($urlPaths, $url) === 0 &&
                 !isset($_SESSION[_LOGINUSER])
             ) {
-                echo '권한이 없습니다.';
+                //echo "권한이 없습니다.";
+                //exit();
                 $this->getView('redirect:/user/signin');
-                exit();
             }
         }
 
@@ -35,10 +36,10 @@ class Controller
         } elseif (gettype($view) === 'object' || gettype($view) === 'array') {
             header('Content-Type:application/json');
             echo json_encode($view);
-            // 객체로 제이슨 넘겨줌
         }
     }
-    private function chkLoginUrl()
+
+    protected function getModel($key)
     {
     }
 

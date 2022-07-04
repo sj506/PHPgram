@@ -1,6 +1,8 @@
 <?php
 namespace application\controllers;
 
+use application\libs\Application;
+
 class FeedController extends Controller
 {
     public function index()
@@ -9,12 +11,10 @@ class FeedController extends Controller
             'feed/index',
             'https://unpkg.com/swiper@8/swiper-bundle.min.js',
         ]);
-
         $this->addAttribute(_CSS, [
             'feed/index',
             'https://unpkg.com/swiper@8/swiper-bundle.min.css',
         ]);
-
         $this->addAttribute(_MAIN, $this->getView('feed/index.php'));
         return 'template/t1.php';
     }
@@ -24,7 +24,7 @@ class FeedController extends Controller
         switch (getMethod()) {
             case _POST:
                 if (!is_array($_FILES) || !isset($_FILES['imgs'])) {
-                    return [_RESULT => 0];
+                    return ['result' => 0];
                 }
                 $iuser = getIuser();
                 $param = [
@@ -54,7 +54,7 @@ class FeedController extends Controller
                         $this->model->insFeedImg($paramImg);
                     }
                 }
-                return [_RESULT => 1];
+                return ['result' => 1];
 
             case _GET:
                 $page = 1;
@@ -67,31 +67,32 @@ class FeedController extends Controller
                     'iuser' => getIuser(),
                 ];
                 $list = $this->model->selFeedList($param);
-
                 foreach ($list as $item) {
                     $item->imgList = $this->model->selFeedImgList($item);
+                    $param2 = ['ifeed' => $item->ifeed];
+                    $item->cmt = Application::getModel('feedcmt')->selFeedCmt(
+                        $param2
+                    );
                 }
                 return $list;
         }
     }
+
     public function fav()
     {
         $urlPaths = getUrlPaths();
         if (!isset($urlPaths[2])) {
             exit();
         }
-
         $param = [
             'ifeed' => intval($urlPaths[2]),
             'iuser' => getIuser(),
         ];
         switch (getMethod()) {
             case _POST:
-                $result = $this->model->insFeedFav($param);
-                return [_RESULT => $result];
+                return [_RESULT => $this->model->insFeedFav($param)];
             case _DELETE:
-                $result = $this->model->delFeedFav($param);
-                return [_RESULT => $result];
+                return [_RESULT => $this->model->delFeedFav($param)];
         }
     }
 }
