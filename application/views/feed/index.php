@@ -1,3 +1,4 @@
+<div id="gData" data-ProfileImg='<?= getProfileImg() ?>'></div>
 <div class="d-flex flex-column align-items-center">
     <div class="size_box_100"></div>
     <div class="w100p_mw614">

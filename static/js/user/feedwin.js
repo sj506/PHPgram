@@ -46,11 +46,9 @@ getFeedList();
                                 btnFollow.dataset.follow = '0';
                                 btnFollow.classList.remove('btn-outline-secondary');
                                 btnFollow.classList.add('btn-primary');
-                                btnFollow.dataset.youme === '1'
-                                    ? (btnFollow.innerText = '맞팔로우 하기')
-                                    : (btnFollow.innerText = '팔로우');
+                                btnFollow.dataset.youme === '1' ? (btnFollow.innerText = '맞팔로우 하기') : (btnFollow.innerText = '팔로우');
 
-                                follower.innerHTML = parseInt(follower.innerHTML) - 1;
+                                follower.innerText = parseInt(follower.innerText) - 1;
                             }
                         });
                     break;
@@ -68,7 +66,7 @@ getFeedList();
                                 btnFollow.classList.add('btn-primary');
                                 btnFollow.innerText = '팔로우취소';
 
-                                follower.innerHTML = parseInt(follower.innerHTML) + 1;
+                                follower.innerText = parseInt(follower.innerText) + 1;
                             }
                         });
                     break;

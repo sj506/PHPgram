@@ -74,7 +74,6 @@ class UserModel extends Model
     //------------------------------- Feed ----------------------//
     public function selFeedList(&$param)
     {
-        $iuser = $param['iuser'];
         $sql = "SELECT A.ifeed, A.location, A.ctnt, A.iuser, A.regdt
                     , C.nm AS writer, C.mainimg
                     , IFNULL(E.cnt, 0) AS favCnt
@@ -82,7 +81,7 @@ class UserModel extends Model
                 FROM t_feed A
                 INNER JOIN t_user C
                 ON A.iuser = C.iuser
-                AND C.iuser = {$iuser}
+                 AND C.iuser = :toiuser
                 LEFT JOIN 
                     (
                         SELECT ifeed, COUNT(ifeed) AS cnt 
@@ -94,12 +93,15 @@ class UserModel extends Model
                     (
                         SELECT ifeed
                         FROM t_feed_fav
-                        WHERE iuser = {$iuser}
+                      WHERE iuser = :loginiuser
                     ) F
                 ON A.ifeed = F.ifeed
                 ORDER BY A.ifeed DESC
                 LIMIT :startIdx, :feedItemCnt";
+
         $stmt = $this->pdo->prepare($sql);
+        $stmt->bindValue(':toiuser', $param['toiuser']);
+        $stmt->bindValue(':loginiuser', $param['loginiuser']);
         $stmt->bindValue(':startIdx', $param['startIdx']);
         $stmt->bindValue(':feedItemCnt', _FEED_ITEM_CNT);
         $stmt->execute();

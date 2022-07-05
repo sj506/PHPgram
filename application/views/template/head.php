@@ -3,6 +3,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= isset($this->title) ? $this->title : _SERVICE_NM ?></title>
+    <link rel="icon" type="image/png" sizes="16x16" href="/static/img/favicons/favicon-16x16.png">
     <link rel="stylesheet" href="/static/css/common.css">
     <?php if (isset($this->css)) {
         foreach ($this->css as $item) {

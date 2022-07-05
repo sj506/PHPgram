@@ -7,14 +7,8 @@ class FeedController extends Controller
 {
     public function index()
     {
-        $this->addAttribute(_JS, [
-            'feed/index',
-            'https://unpkg.com/swiper@8/swiper-bundle.min.js',
-        ]);
-        $this->addAttribute(_CSS, [
-            'feed/index',
-            'https://unpkg.com/swiper@8/swiper-bundle.min.css',
-        ]);
+        $this->addAttribute(_JS, ['feed/index', 'https://unpkg.com/swiper@8/swiper-bundle.min.js']);
+        $this->addAttribute(_CSS, ['feed/index', 'https://unpkg.com/swiper@8/swiper-bundle.min.css']);
         $this->addAttribute(_MAIN, $this->getView('feed/index.php'));
         return 'template/t1.php';
     }
@@ -42,19 +36,17 @@ class FeedController extends Controller
                     }
                     $tempName = $_FILES['imgs']['tmp_name'][$key];
                     $randomFileNm = getRandomFileNm($originFileNm);
-                    if (
-                        move_uploaded_file(
-                            $tempName,
-                            $saveDirectory . '/' . $randomFileNm
-                        )
-                    ) {
+                    if (move_uploaded_file($tempName, $saveDirectory . '/' . $randomFileNm)) {
                         //chmod($saveDirectory . "/test." . $ext, octdec("0666"));
                         //chmod("C:/Apache24/PHPgram/static/img/profile/1/test." . $ext, 0755);
                         $paramImg['img'] = $randomFileNm;
                         $this->model->insFeedImg($paramImg);
                     }
                 }
-                return ['result' => 1];
+                $param2 = ['ifeed' => $ifeed];
+                $data = $this->model->selFeedAfterReg($param2);
+                $data->imgList = $this->model->selFeedImgList($param2);
+                return $data;
 
             case _GET:
                 $page = 1;
@@ -68,16 +60,13 @@ class FeedController extends Controller
                 ];
                 $list = $this->model->selFeedList($param);
                 foreach ($list as $item) {
-                    $item->imgList = $this->model->selFeedImgList($item);
                     $param2 = ['ifeed' => $item->ifeed];
-                    $item->cmt = Application::getModel('feedcmt')->selFeedCmt(
-                        $param2
-                    );
+                    $item->imgList = $this->model->selFeedImgList($param2);
+                    $item->cmt = Application::getModel('feedcmt')->selFeedCmt($param2);
                 }
                 return $list;
         }
     }
-
     public function fav()
     {
         $urlPaths = getUrlPaths();

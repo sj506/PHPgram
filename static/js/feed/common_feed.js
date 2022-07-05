@@ -41,32 +41,7 @@ const feedObj = {
     loadingElem: document.querySelector('.loading'),
     containerElem: document.querySelector('#item_container'),
 
-    makeCmtItem: function (item) {
-        const divCmtItemContainer = document.createElement('div');
-        divCmtItemContainer.className = 'd-flex flex-row align-items-center mb-2';
-        const src =
-            '/static/img/profile/' +
-            (item.writerimg ? `${item.iuser}/${item.writerimg}` : 'defaultProfileImg_100.png');
-        divCmtItemContainer.innerHTML = `
-            <div class="circleimg h24 w24 me-1">
-                <img src="${src}" class="profile w24 pointer">                
-            </div>
-            <div class="d-flex flex-row">
-                <div class="pointer me-2">${item.writer} - ${getDateTimeInfo(item.regdt)}</div>
-                <div>${item.cmt}</div>
-            </div>
-        `;
-        return divCmtItemContainer;
-    },
-
-    makeFeedList: function (list) {
-        if (list.length !== 0) {
-            list.forEach((item) => {
-                const divItem = this.makeFeedItem(item);
-                this.containerElem.appendChild(divItem);
-            });
-        }
-
+    refreshSwipe: function () {
         if (this.swiper !== null) {
             this.swiper = null;
         }
@@ -80,7 +55,85 @@ const feedObj = {
             direction: 'horizontal',
             loop: false,
         });
+    },
 
+    getFeedCmtList: function (ifeed, divCmtList, spanMoreCmt) {
+        fetch(`/feedcmt/index?ifeed=${ifeed}`)
+            .then((res) => res.json())
+            .then((res) => {
+                if (res && res.length > 0) {
+                    if (spanMoreCmt) {
+                        spanMoreCmt.remove();
+                    }
+                    divCmtList.innerHTML = null;
+                    res.forEach((item) => {
+                        const divCmtItem = this.makeCmtItem(item);
+                        divCmtList.appendChild(divCmtItem);
+                    });
+                }
+            });
+    },
+
+    makeCmtItem: function (item) {
+        const divCmtItemContainer = document.createElement('div');
+
+        divCmtItemContainer.className = 'd-flex flex-row align-items-center mb-2';
+        const src = '/static/img/profile/' + (item.writerimg ? `${item.iuser}/${item.writerimg}` : 'defaultProfileImg_100.png');
+        divCmtItemContainer.innerHTML = `
+            <div class="circleimg h24 w24 me-1">
+                <img src="${src}" class="profile w24 pointer" onClick="moveToFeedWin(${item.iuser})">                 
+            </div>
+            <div class="d-flex flex-row">
+                <div class="me-2 pointer" onClick="moveToFeedWin(${item.iuser})">${item.writer} - <span class="rem0_8">${getDateTimeInfo(item.regdt)}</span></div>
+                <div>${item.cmt}</div>
+            </div>
+        `;
+        // const profimg = divCmtItemContainer.querySelector('img');
+
+        // profimg.addEventListener('click', () => {
+        //     moveToFeedWin(item.iuser);
+        // });
+
+        return divCmtItemContainer;
+    },
+
+    // 최근 댓글 바로 보이게뜨기
+    // const divCmtForm = document.querySelector('.divForm');
+    // const btnCmtReg = divCmtForm.querySelector('.divForm');
+
+    // btnCmtReg.addEventListener('click', function () {
+    //     const inputCmt = divCmtForm.querySelector('input');
+    //     const divCmtItemContainer = document.querySelector('.cmtDiv');
+    //     const gData = document.querySelector('#gData');
+
+    //     const proImg = gData.dataset.profileimg
+    //         ? gData.dataset.profileimg
+    //         : '/static/img/profile/defaultProfileImg_100.png';
+    //     console.log(divTop);
+    //     console.log('inputCmt :' + inputCmt.value);
+    //     divCmtItemContainer.innerHTML = `
+    //     <div class="circleimg h24 w24 me-1">
+    //         <img src=${proImg} class="profile w24 pointer">
+    //     </div>
+    //     <div class="d-flex flex-row">
+    //         <div class="pointer me-2"> - 방금 전</div>
+    //         <div>${inputCmt.value}</div>
+    //     </div>
+    // `;
+
+    makeFeedList: function (list) {
+        if (list.length !== 0) {
+            list.forEach((item) => {
+                const divItem = this.makeFeedItem(item);
+                this.containerElem.appendChild(divItem);
+            });
+        }
+
+        if (this.swiper !== null) {
+            this.swiper = null;
+        }
+
+        this.refreshSwipe();
         this.hideLoading();
     },
 
@@ -163,18 +216,24 @@ const feedObj = {
         heartIcon.classList.add(item.isFav === 1 ? 'fas' : 'far');
 
         heartIcon.addEventListener('click', (e) => {
-            console.log(item.isFav);
-            if (item.isFav === 0) {
-                heartIcon.classList.add('fas');
-                heartIcon.classList.remove('fav');
-            } else if (item.isFav === 1) {
-                heartIcon.classList.add('fav');
-                heartIcon.classList.remove('fas');
-            }
             let method = 'POST';
+            console.log(item.isFav);
 
+            if (item.isFav === 0) {
+                divFav.classList.remove('d-none');
+
+                item.favCnt = item.favCnt + 1;
+                spanFavCnt.innerHTML = `좋아요 ${item.favCnt}개`;
+            }
             if (item.isFav === 1) {
+                //delete (1은 0으로 바꿔줘야 함)
                 method = 'DELETE';
+                divFav.classList.remove('d-none');
+                item.favCnt = item.favCnt - 1;
+                spanFavCnt.innerHTML = `좋아요 ${item.favCnt}개`;
+                if (item.favCnt === 0) {
+                    divFav.classList.add('d-none');
+                }
             }
 
             fetch(`/feed/fav/${item.ifeed}`, {
@@ -182,13 +241,23 @@ const feedObj = {
             })
                 .then((res) => res.json())
                 .then((res) => {
-                    console.log(res);
                     if (res.result) {
-                        item.isFav = 1 - item.isFav;
+                        item.isFav = 1 - item.isFav; // 0 > 1, 1 > 0
+                        if (item.isFav === 0) {
+                            // 좋아요 취소
+                            heartIcon.classList.remove('fas');
+                            heartIcon.classList.add('far');
+                        } else {
+                            // 좋아요 처리
+                            heartIcon.classList.remove('far');
+                            heartIcon.classList.add('fas');
+                        }
                     } else {
-                        heartIcon.classList.add(item.isFav === 0 ? 'fas' : 'far');
-                        alert('좋아요를 할 수 없어요');
+                        alert('좋아요를 할 수 없습니다.');
                     }
+                })
+                .catch((e) => {
+                    alert('네트워크에 이상이 있습니다.');
                 });
         });
 
@@ -197,13 +266,14 @@ const feedObj = {
         divDm.className = 'pointer';
         divDm.innerHTML = `<svg aria-label="다이렉트 메시지" class="_8-yf5 " color="#262626" fill="#262626" height="24" role="img" viewBox="0 0 24 24" width="24"><line fill="none" stroke="currentColor" stroke-linejoin="round" stroke-width="2" x1="22" x2="9.218" y1="3" y2="10.083"></line><polygon fill="none" points="11.698 20.334 22 3.001 2 3.001 9.218 10.084 11.698 20.334" stroke="currentColor" stroke-linejoin="round" stroke-width="2"></polygon></svg>`;
 
+        const spanFavCnt = document.createElement('span');
+        spanFavCnt.className = 'bold';
+        spanFavCnt.innerHTML = `좋아요 ${item.favCnt}개`;
+
         const divFav = document.createElement('div');
         divContainer.appendChild(divFav);
         divFav.className = 'p-3 d-none';
-        const spanFavCnt = document.createElement('span');
         divFav.appendChild(spanFavCnt);
-        spanFavCnt.className = 'bold';
-        spanFavCnt.innerHTML = `좋아요 ${item.favCnt}개`;
 
         if (item.favCnt > 0) {
             divFav.classList.remove('d-none');
@@ -221,6 +291,7 @@ const feedObj = {
 
         const divCmt = document.createElement('div');
         divContainer.appendChild(divCmt);
+        const spanMoreCmt = document.createElement('span');
 
         if (item.cmt) {
             const divCmtItem = this.makeCmtItem(item.cmt);
@@ -231,16 +302,17 @@ const feedObj = {
                 divCmt.appendChild(divMoreCmt);
                 divMoreCmt.className = 'ms-3';
 
-                const spanMoreCmt = document.createElement('span');
                 divMoreCmt.appendChild(spanMoreCmt);
                 spanMoreCmt.className = 'pointer';
                 spanMoreCmt.innerText = '댓글 더보기..';
-                spanMoreCmt.addEventListener('click', (e) => {});
+                spanMoreCmt.addEventListener('click', (e) => {
+                    this.getFeedCmtList(item.ifeed, divCmtList, spanMoreCmt);
+                });
             }
         }
 
         const divCmtForm = document.createElement('div');
-        divCmtForm.className = 'd-flex flex-row';
+        divCmtForm.className = 'd-flex flex-row divForm';
         divCmt.appendChild(divCmtForm);
 
         divCmtForm.innerHTML = `
@@ -248,29 +320,29 @@ const feedObj = {
             <button type="button" class="btn btn-outline-primary" id="cmtBtn">등록</button>
         `;
 
+        const inputCmt = divCmtForm.querySelector('input');
+        inputCmt.addEventListener('keyup', (e) => {
+            if (e.key === 'Enter') {
+                btnCmtReg.click();
+            }
+        });
         const btnCmtReg = divCmtForm.querySelector('button');
-        btnCmtReg.addEventListener('click', function () {
-            const cmt = document.createElement('div');
-            const divCmt = document.querySelector('.divCmt');
-            const inputCmt = divCmtForm.querySelector('input');
-            console.log('inputCmt :' + inputCmt.value);
-            cmt.innerHTML = `
-            <div>${inputCmt.value}</div>
-                               `;
-
-            divCmt.appendChild(cmt);
-
-            const param = { ifeed: item.ifeed, cmt: inputCmt.value };
+        btnCmtReg.addEventListener('click', (e) => {
+            const param = {
+                ifeed: item.ifeed,
+                cmt: inputCmt.value,
+            };
             fetch('/feedcmt/index', {
                 method: 'POST',
                 body: JSON.stringify(param),
             })
                 .then((res) => res.json())
                 .then((res) => {
-                    console.log(res);
-                    console.log('icmt :' + res.result);
+                    console.log('icmt : ' + res.result);
                     if (res.result) {
                         inputCmt.value = '';
+                        //댓글 공간에 댓글 내용 추가
+                        this.getFeedCmtList(item.ifeed, divCmtList, spanMoreCmt);
                     }
                 });
         });
@@ -343,8 +415,16 @@ function moveToFeedWin(iuser) {
                         .then((myJson) => {
                             console.log(myJson);
 
-                            if (myJson.result) {
+                            if (myJson) {
                                 btnClose.click();
+                                const gData = document.querySelector('#gData');
+                                if (gData.dataset.toiuser !== gData.dataset.loginIuser) {
+                                    console.log('버그해결');
+                                    return;
+                                }
+                                const feedItem = feedObj.makeFeedItem(myJson);
+                                feedObj.containerElem.prepend(feedItem);
+                                feedObj.refreshSwipe();
                             }
                         });
                 });

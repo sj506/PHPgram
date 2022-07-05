@@ -62,15 +62,8 @@ class UserController extends Controller
         $param = ['feediuser' => $iuser, 'loginiuser' => getIuser()];
         $this->addAttribute(_DATA, $this->model->selUserProfile($param));
 
-        $this->addAttribute(_JS, [
-            'user/feedwin',
-            'https://unpkg.com/swiper@8/swiper-bundle.min.js',
-        ]);
-        $this->addAttribute(_CSS, [
-            'user/feedwin',
-            'https://unpkg.com/swiper@8/swiper-bundle.min.css',
-            'feed/index',
-        ]);
+        $this->addAttribute(_JS, ['user/feedwin', 'https://unpkg.com/swiper@8/swiper-bundle.min.js']);
+        $this->addAttribute(_CSS, ['user/feedwin', 'https://unpkg.com/swiper@8/swiper-bundle.min.css', 'feed/index']);
         $this->addAttribute(_MAIN, $this->getView('user/feedwin.php'));
         return 'template/t1.php';
     }
@@ -85,12 +78,15 @@ class UserController extends Controller
             $startIdx = ($page - 1) * _FEED_ITEM_CNT;
             $param = [
                 'startIdx' => $startIdx,
-                'iuser' => $_GET['iuser'],
+                'toiuser' => $_GET['iuser'],
+                'loginiuser' => getIuser(),
             ];
             $list = $this->model->selFeedList($param);
             foreach ($list as $item) {
-                $item->imgList = Application::getModel('feed') // feedmodel 객체의 주소값이 넘어옴
-                    ->selFeedImgList($item);
+                $param2 = ['ifeed' => $item->ifeed];
+                $item->imgList = Application::getModel('feed')->selFeedImgList($param2);
+                // feedmodel 객체의 주소값이 넘어옴
+                $item->cmt = Application::getModel('feedcmt')->selFeedCmt($param2);
             }
             return $list;
         }

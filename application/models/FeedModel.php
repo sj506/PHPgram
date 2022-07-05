@@ -71,18 +71,35 @@ class FeedModel extends Model
         $sql = "SELECT img FROM t_feed_img 
                  WHERE ifeed = :ifeed";
         $stmt = $this->pdo->prepare($sql);
-        $stmt->bindValue(':ifeed', $param->ifeed);
+        $stmt->bindValue(':ifeed', $param['ifeed']);
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_OBJ);
     }
-    // --------------------- Fav ------------------------------
 
+    public function selFeedAfterReg(&$param)
+    {
+        $sql = "SELECT A.ifeed, A.location, A.ctnt, A.iuser, A.regdt
+                    , C.nm AS writer, C.mainimg
+                    , 0 AS favCnt
+                    , 0 AS isFav
+                FROM t_feed A
+                INNER JOIN t_user C
+                ON A.iuser = C.iuser               
+                WHERE A.ifeed = :ifeed
+                ORDER BY A.ifeed DESC";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->bindValue(':ifeed', $param['ifeed']);
+        $stmt->execute();
+        return $stmt->fetch(PDO::FETCH_OBJ);
+    }
+
+    //------------------------------- Fav ----------------------//
     public function insFeedFav(&$param)
     {
-        $sql = "INSERT into t_feed_fav 
-                (ifeed , iuser) 
-                values
-                (:ifeed , :iuser)";
+        $sql = "INSERT INTO t_feed_fav
+        (ifeed, iuser)
+        VALUES
+        (:ifeed, :iuser)";
         $stmt = $this->pdo->prepare($sql);
         $stmt->bindValue(':ifeed', $param['ifeed']);
         $stmt->bindValue(':iuser', $param['iuser']);
@@ -92,8 +109,9 @@ class FeedModel extends Model
 
     public function delFeedFav(&$param)
     {
-        $sql = "DELETE from t_feed_fav 
-                where ifeed = :ifeed and iuser = :iuser";
+        $sql = "DELETE FROM t_feed_fav
+                 WHERE ifeed = :ifeed
+                   AND iuser = :iuser";
         $stmt = $this->pdo->prepare($sql);
         $stmt->bindValue(':ifeed', $param['ifeed']);
         $stmt->bindValue(':iuser', $param['iuser']);
