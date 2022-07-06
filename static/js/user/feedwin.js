@@ -1,31 +1,35 @@
-const url = new URL(location.href);
-
-function getFeedList() {
-    if (!feedObj) {
-        return;
-    }
-    feedObj.showLoading();
-    const param = {
-        page: feedObj.currentPage++,
-        iuser: url.searchParams.get('iuser'),
-    };
-    fetch('/user/feed' + encodeQueryString(param))
-        .then((res) => res.json())
-        .then((list) => {
-            feedObj.makeFeedList(list);
-        })
-        .catch((e) => {
-            console.error(e);
-            feedObj.hideLoading();
-        });
+if (feedObj) {
+    const url = new URL(location.href);
+    feedObj.iuser = parseInt(url.searchParams.get('iuser'));
+    feedObj.getFeedUrl = '/user/feed';
+    feedObj.getFeedList();
 }
-getFeedList();
+// function getFeedList() {
+//     if (!feedObj) {
+//         return;
+//     }
+//     feedObj.showLoading();
+//     const param = {
+//         page: feedObj.currentPage++,
+//         iuser: url.searchParams.get('iuser'),
+//     };
+//     fetch('/user/feed' + encodeQueryString(param))
+//         .then((res) => res.json())
+//         .then((list) => {
+//             feedObj.makeFeedList(list);
+//         })
+//         .catch((e) => {
+//             console.error(e);
+//             feedObj.hideLoading();
+//         });
+// }
+// getFeedList();
 
 (function () {
     const gData = document.querySelector('#gData');
 
     const btnFollow = document.querySelector('#btnFollow');
-    const follower = document.querySelector('.follower');
+    const spanCntFollower = document.querySelector('.spanCntFollower');
 
     if (btnFollow) {
         btnFollow.addEventListener('click', function () {
@@ -48,7 +52,7 @@ getFeedList();
                                 btnFollow.classList.add('btn-primary');
                                 btnFollow.dataset.youme === '1' ? (btnFollow.innerText = '맞팔로우 하기') : (btnFollow.innerText = '팔로우');
 
-                                follower.innerText = parseInt(follower.innerText) - 1;
+                                spanCntFollower.innerText = parseInt(spanCntFollower.innerText) - 1;
                             }
                         });
                     break;
@@ -62,15 +66,65 @@ getFeedList();
                             console.log(res);
                             if (res.result) {
                                 btnFollow.dataset.follow = '1';
-                                btnFollow.classList.remove('btn-outline-secondary');
-                                btnFollow.classList.add('btn-primary');
+                                btnFollow.classList.remove('btn-primary');
+                                btnFollow.classList.add('btn-outline-secondary');
                                 btnFollow.innerText = '팔로우취소';
 
-                                follower.innerText = parseInt(follower.innerText) + 1;
+                                spanCntFollower.innerText = parseInt(spanCntFollower.innerText) + 1;
                             }
                         });
                     break;
             }
         });
     }
+
+    // 열심히 한 결과 ----------------------------------------------------------
+    const imgUploadBtn = document.querySelector('.imgUpload');
+    const btnDelCurrentProfilePic = document.querySelector('#btnDelCurrentProfilePic');
+
+    const btnClose = document.querySelector('#btnModalClose');
+
+    const myfeedmodal = document.querySelector('#changeProfileImgModal');
+    const updprofileImg = myfeedmodal.querySelector('input');
+    const frmElem = myfeedmodal.querySelector('form');
+
+    imgUploadBtn.addEventListener('click', () => {
+        updprofileImg.click();
+    });
+    updprofileImg.addEventListener('change', function () {
+        const files = frmElem.imgs.files;
+        const fData = new FormData();
+        fData.append('imgs[]', files[0]);
+        console.log(fData);
+
+        fetch('/user/profile', {
+            method: 'POST',
+            body: fData,
+        })
+            .then((res) => res.json())
+            .then((res) => {
+                console.log(res);
+                const profileImgList = document.querySelectorAll('.profileimg');
+                profileImgList.forEach((item) => {
+                    item.src = `/static/img/profile/${gData.dataset.toiuser}/${res.fileNm}`;
+                });
+            });
+        btnClose.click();
+    });
+
+    btnDelCurrentProfilePic.addEventListener('click', () => {
+        fetch('/user/profile', {
+            method: 'DELETE',
+        })
+            .then((res) => res.json())
+            .then((res) => {
+                const profileImgList = document.querySelectorAll('.profileimg');
+                profileImgList.forEach((item) => {
+                    item.src = '/static/img/profile/defaultProfileImg_100.png';
+                });
+                if (res) {
+                    btnClose.click();
+                }
+            });
+    });
 })();

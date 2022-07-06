@@ -81,7 +81,6 @@ class UserModel extends Model
                 FROM t_feed A
                 INNER JOIN t_user C
                 ON A.iuser = C.iuser
-                 AND C.iuser = :toiuser
                 LEFT JOIN 
                     (
                         SELECT ifeed, COUNT(ifeed) AS cnt 
@@ -96,6 +95,7 @@ class UserModel extends Model
                       WHERE iuser = :loginiuser
                     ) F
                 ON A.ifeed = F.ifeed
+                WHERE C.iuser = :toiuser
                 ORDER BY A.ifeed DESC
                 LIMIT :startIdx, :feedItemCnt";
 
@@ -106,5 +106,25 @@ class UserModel extends Model
         $stmt->bindValue(':feedItemCnt', _FEED_ITEM_CNT);
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_OBJ);
+    }
+
+    public function updUser(&$param)
+    {
+        $sql = "UPDATE t_user
+                set moddt = now()";
+        if (isset($param['mainimg'])) {
+            $mainimg = $param['mainimg'];
+            $sql .= ", mainimg = '{$mainimg}'";
+        }
+        if (isset($param['delMainImg'])) {
+            $sql .= ', mainimg = null';
+        }
+
+        $sql .= ' WHERE iuser = :iuser';
+
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->bindValue(':iuser', $param['iuser']);
+        $stmt->execute();
+        return $stmt->rowCount();
     }
 }

@@ -14,22 +14,15 @@ class Application
     public function __construct()
     {
         $urlPaths = getUrlPaths();
-        $controller =
-            isset($urlPaths[0]) && $urlPaths[0] != '' ? $urlPaths[0] : 'board';
-        $action =
-            isset($urlPaths[1]) && $urlPaths[1] != '' ? $urlPaths[1] : 'index';
+        $controller = isset($urlPaths[0]) && $urlPaths[0] != '' ? $urlPaths[0] : 'board';
+        $action = isset($urlPaths[1]) && $urlPaths[1] != '' ? $urlPaths[1] : 'index';
 
-        if (
-            !file_exists(
-                'application/controllers/' . $controller . 'Controller.php'
-            )
-        ) {
+        if (!file_exists('application/controllers/' . $controller . 'Controller.php')) {
             echo '해당 컨트롤러가 존재하지 않습니다.';
             exit();
         }
 
-        $controllerName =
-            'application\controllers\\' . $controller . 'controller';
+        $controllerName = 'application\controllers\\' . $controller . 'controller';
         $model = $this->getModel($controller);
         new $controllerName($action, $model);
     }

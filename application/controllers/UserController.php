@@ -108,4 +108,40 @@ class UserController extends Controller
                 return [_RESULT => $this->model->delUserFollow($param)];
         }
     }
+
+    // 열심히 한 결과
+    public function profile()
+    {
+        switch (getMethod()) {
+            case _POST:
+                $saveDirectory = _IMG_PATH . '/profile/' . getIuser();
+
+                $tempName = $_FILES['imgs']['tmp_name'][0];
+                $randomFileNm = getRandomFileNm($_FILES['imgs']['name'][0]);
+                if (move_uploaded_file($tempName, $saveDirectory . '/' . $randomFileNm)) {
+                    if (is_file($saveDirectory . ' / ' . getLoginUser()->mainimg)) {
+                        unlink($saveDirectory . '/' . getLoginUser()->mainimg);
+                    }
+                    $paramImg = ['mainimg' => $randomFileNm, 'iuser' => getIuser()];
+                    $this->model->updUser($paramImg);
+                    getLoginUser()->mainimg = $randomFileNm;
+                }
+
+                return [_RESULT => $this->model->updUser($paramImg), 'fileNm' => $randomFileNm];
+
+            case _DELETE:
+                $loginUser = getLoginUser();
+                if ($loginUser) {
+                    $path = "static/img/profile/{$loginUser->iuser}/{$loginUser->mainimg}";
+                    if (file_exists($path) && unlink($path)) {
+                        $param = ['iuser' => $loginUser->iuser, 'delMainImg' => 1];
+                        if ($this->model->updUser($param)) {
+                            $loginUser->mainimg = null;
+                            return [_RESULT => 1];
+                        }
+                    }
+                    return [_RESULT => 0];
+                }
+        }
+    }
 }

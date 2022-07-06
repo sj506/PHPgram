@@ -38,8 +38,48 @@ const feedObj = {
     itemLength: 0,
     currentPage: 1,
     swiper: null,
+    iuser: 0,
+    getFeedUrl: '',
     loadingElem: document.querySelector('.loading'),
     containerElem: document.querySelector('#item_container'),
+
+    setScrollInfinity: function () {
+        window.addEventListener(
+            'scroll',
+            (e) => {
+                const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
+                //    const document.documentElement.scrollTop; -> 맨 위에 스크롤 = 0
+                //    const document.documentElement.scrollHeight; -> 전체 스크롤
+                //    const document.documentElement.clientHeight; -> 현재 스크롤
+                // 이거랑 같은 거, 구조분할할당
+
+                if (scrollTop + clientHeight >= scrollHeight - 20 && this.itemLength === this.limit) {
+                    this.getFeedList();
+                }
+            },
+            { passive: true }
+        );
+    },
+
+    getFeedList: function () {
+        this.itemLength = 0;
+
+        this.showLoading();
+        const param = {
+            page: this.currentPage++,
+            iuser: this.iuser,
+        };
+        fetch(this.getFeedUrl + encodeQueryString(param))
+            .then((res) => res.json())
+            .then((list) => {
+                this.itemLength = list.length;
+                this.makeFeedList(list);
+            })
+            .catch((e) => {
+                console.error(e);
+                this.hideLoading();
+            });
+    },
 
     refreshSwipe: function () {
         if (this.swiper !== null) {
@@ -81,7 +121,7 @@ const feedObj = {
         const src = '/static/img/profile/' + (item.writerimg ? `${item.iuser}/${item.writerimg}` : 'defaultProfileImg_100.png');
         divCmtItemContainer.innerHTML = `
             <div class="circleimg h24 w24 me-1">
-                <img src="${src}" class="profile w24 pointer" onClick="moveToFeedWin(${item.iuser})">                 
+                <img src="${src}" class="profile w24 pointer profileimg" onClick="moveToFeedWin(${item.iuser})">                 
             </div>
             <div class="d-flex flex-row">
                 <div class="me-2 pointer" onClick="moveToFeedWin(${item.iuser})">${item.writer} - <span class="rem0_8">${getDateTimeInfo(item.regdt)}</span></div>
@@ -96,30 +136,6 @@ const feedObj = {
 
         return divCmtItemContainer;
     },
-
-    // 최근 댓글 바로 보이게뜨기
-    // const divCmtForm = document.querySelector('.divForm');
-    // const btnCmtReg = divCmtForm.querySelector('.divForm');
-
-    // btnCmtReg.addEventListener('click', function () {
-    //     const inputCmt = divCmtForm.querySelector('input');
-    //     const divCmtItemContainer = document.querySelector('.cmtDiv');
-    //     const gData = document.querySelector('#gData');
-
-    //     const proImg = gData.dataset.profileimg
-    //         ? gData.dataset.profileimg
-    //         : '/static/img/profile/defaultProfileImg_100.png';
-    //     console.log(divTop);
-    //     console.log('inputCmt :' + inputCmt.value);
-    //     divCmtItemContainer.innerHTML = `
-    //     <div class="circleimg h24 w24 me-1">
-    //         <img src=${proImg} class="profile w24 pointer">
-    //     </div>
-    //     <div class="d-flex flex-row">
-    //         <div class="pointer me-2"> - 방금 전</div>
-    //         <div>${inputCmt.value}</div>
-    //     </div>
-    // `;
 
     makeFeedList: function (list) {
         if (list.length !== 0) {
@@ -147,7 +163,7 @@ const feedObj = {
 
         const regDtInfo = getDateTimeInfo(item.regdt);
         divTop.className = 'd-flex flex-row ps-3 pe-3';
-        const writerImg = `<img src='/static/img/profile/${item.iuser}/${item.mainimg}' 
+        const writerImg = `<img class="profileimg" src='/static/img/profile/${item.iuser}/${item.mainimg}' 
             onerror='this.error=null;this.src="/static/img/profile/defaultProfileImg_100.png"'>`;
 
         divTop.innerHTML = `
@@ -223,18 +239,17 @@ const feedObj = {
                 divFav.classList.remove('d-none');
 
                 item.favCnt = item.favCnt + 1;
-                spanFavCnt.innerHTML = `좋아요 ${item.favCnt}개`;
             }
             if (item.isFav === 1) {
                 //delete (1은 0으로 바꿔줘야 함)
                 method = 'DELETE';
                 divFav.classList.remove('d-none');
                 item.favCnt = item.favCnt - 1;
-                spanFavCnt.innerHTML = `좋아요 ${item.favCnt}개`;
                 if (item.favCnt === 0) {
                     divFav.classList.add('d-none');
                 }
             }
+            spanFavCnt.innerHTML = `좋아요 ${item.favCnt}개`;
 
             fetch(`/feed/fav/${item.ifeed}`, {
                 method: method,
@@ -425,6 +440,7 @@ function moveToFeedWin(iuser) {
                                 const feedItem = feedObj.makeFeedItem(myJson);
                                 feedObj.containerElem.prepend(feedItem);
                                 feedObj.refreshSwipe();
+                                window.scrollTo(0, 0);
                             }
                         });
                 });
