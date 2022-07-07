@@ -6,7 +6,8 @@ data-mainimg="<?= $this->data->mainimg ?>" data-nm="<?= $this->data->nm ?>"></di
             <div class="d-flex flex-row">            
                 <div class="d-flex flex-column justify-content-center me-3">                
                     <div class="circleimg h150 w150 pointer feedwin">                    
-                        <img class="profileimg" id="profileImg" data-bs-toggle="modal" data-bs-target="#changeProfileImgModal" src='/static/img/profile/<?= $this->data->iuser ?>/<?= $this->data
+                        <img class="profileimg" id="profileImg" data-bs-toggle="modal" data-bs-target="#changeProfileImgModal" src='/static/img/profile/<?= $this
+                            ->data->iuser ?>/<?= $this->data
     ->mainimg ?>' onerror='this.error=null;this.src="/static/img/profile/defaultProfileImg_100.png"'>
                     </div>
                 </div>     
@@ -50,10 +51,13 @@ data-mainimg="<?= $this->data->mainimg ?>" data-nm="<?= $this->data->nm ?>"></di
               <div class="modal-header w100p_mw614 justify-content-center">
                 <h5 class="_modal-title w100p_mw614" id="staticBackdropLabel">프로필 사진 바꾸기</h5>
                     </div>
-                    <div class="_modal-body modal-body bold-blue w100p_mw614 pointer imgUpload">
-                        사진 업로드
+                    <div class="_modal-body modal-body bold-blue w100p_mw614 pointer imgUpload text-primary" data-bs-target="#changeProfileImg" data-bs-toggle="modal" id="changeImg">
+                        <span>사진 업로드</span>
                     </div>
-                    <div id="btnDelCurrentProfilePic" class="_modal-body modal-body bold-red w100p_mw614 pointer not-border imgDel <?php $this->data->mainimg == null ? print 'd-none' : ''; ?>">
+                    <div id="btnDelCurrentProfilePic" class="_modal-body modal-body bold-red w100p_mw614 pointer not-border imgDel <?php $this->data
+                        ->mainimg == null
+                        ? print 'd-none'
+                        : ''; ?>">
                         현재 사진 삭제
                     </div>
                     <div class="_modal-footer modal-footer w100p_mw614 pointer" id="btnModalClose" data-bs-dismiss="modal">
@@ -107,4 +111,28 @@ data-mainimg="<?= $this->data->mainimg ?>" data-nm="<?= $this->data->nm ?>"></di
         </div>
     </div>
 </div>
+
+<div class="modal fade" id="changeProfileImg" aria-hidden="true" aria-labelledby="changeProfileImg" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title bold" id="changeProfileImgLabel">사진 업로드</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center">
+                <div class="circleimg h300 w300 pointer">
+                    <img id="currentProfileImg" class="profileimg" 
+                        src='/static/img/profile/<?= $this->data->iuser ?>/<?= $this->data->mainimg ?>' 
+                        onerror='this.error=null;this.src="/static/img/profile/defaultProfileImg_100.png"'>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" id="changeBtn">변경하기</button>
+            </div>
+        </div>
+        
+        <form class="d-none">
+            <input type="file" accept="image/*" name="imgs">
+        </form>
+                </div>
 </body>

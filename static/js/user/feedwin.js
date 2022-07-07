@@ -79,7 +79,7 @@ if (feedObj) {
     }
 
     // 열심히 한 결과 ----------------------------------------------------------
-    const imgUploadBtn = document.querySelector('.imgUpload');
+    const imgUploadBtn = document.querySelector('#currentProfileImg');
     const btnDelCurrentProfilePic = document.querySelector('#btnDelCurrentProfilePic');
 
     const btnClose = document.querySelector('#btnModalClose');
@@ -110,6 +110,7 @@ if (feedObj) {
                 });
             });
         btnClose.click();
+        btnDelCurrentProfilePic.classList.remove('d-flex');
     });
 
     btnDelCurrentProfilePic.addEventListener('click', () => {
@@ -124,6 +125,7 @@ if (feedObj) {
                 });
                 if (res) {
                     btnClose.click();
+                    btnDelCurrentProfilePic.classList.add('d-none');
                 }
             });
     });
