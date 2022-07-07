@@ -1,5 +1,5 @@
-<div id="gData" data-toiuser="<?= $this->data->iuser ?>" data-loginIuser="<?= getIuser() ?>"
-data-="<?= $this->data->mainimg ?>" data-nm="<?= $this->data->nm ?>"></div>
+<div id="gData" data-toiuser="<?= $this->data->iuser ?>" data-loginiuser="<?= getIuser() ?>"
+data-mainimg="<?= $this->data->mainimg ?>" data-nm="<?= $this->data->nm ?>"></div>
 <div class="d-flex flex-column align-items-center">
     <div class="size_box_100"></div>
         <div class="w100p_mw614">

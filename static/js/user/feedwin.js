@@ -92,10 +92,10 @@ if (feedObj) {
         updprofileImg.click();
     });
     updprofileImg.addEventListener('change', function () {
-        const files = frmElem.imgs.files;
+        const files = frmElem.imgs.files[0];
         const fData = new FormData();
-        fData.append('imgs[]', files[0]);
-        console.log(fData);
+        fData.append('imgs', files);
+        console.log(files);
 
         fetch('/user/profile', {
             method: 'POST',

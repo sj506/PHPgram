@@ -116,10 +116,10 @@ class UserController extends Controller
             case _POST:
                 $saveDirectory = _IMG_PATH . '/profile/' . getIuser();
 
-                $tempName = $_FILES['imgs']['tmp_name'][0];
-                $randomFileNm = getRandomFileNm($_FILES['imgs']['name'][0]);
+                $tempName = $_FILES['imgs']['tmp_name'];
+                $randomFileNm = getRandomFileNm($_FILES['imgs']['name']);
                 if (move_uploaded_file($tempName, $saveDirectory . '/' . $randomFileNm)) {
-                    if (is_file($saveDirectory . ' / ' . getLoginUser()->mainimg)) {
+                    if (is_file($saveDirectory . '/' . getLoginUser()->mainimg)) {
                         unlink($saveDirectory . '/' . getLoginUser()->mainimg);
                     }
                     $paramImg = ['mainimg' => $randomFileNm, 'iuser' => getIuser()];

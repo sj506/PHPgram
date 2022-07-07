@@ -61,6 +61,7 @@ const feedObj = {
         );
     },
 
+    // feed 가져옴
     getFeedList: function () {
         this.itemLength = 0;
 
@@ -81,6 +82,7 @@ const feedObj = {
             });
     },
 
+    // swipe 기능 하는 것
     refreshSwipe: function () {
         if (this.swiper !== null) {
             this.swiper = null;
@@ -97,6 +99,7 @@ const feedObj = {
         });
     },
 
+    // 댓글
     getFeedCmtList: function (ifeed, divCmtList, spanMoreCmt) {
         fetch(`/feedcmt/index?ifeed=${ifeed}`)
             .then((res) => res.json())
@@ -114,6 +117,7 @@ const feedObj = {
             });
     },
 
+    //댓글 만드는 것
     makeCmtItem: function (item) {
         const divCmtItemContainer = document.createElement('div');
 
@@ -137,6 +141,7 @@ const feedObj = {
         return divCmtItemContainer;
     },
 
+    //피드 만드는 것
     makeFeedList: function (list) {
         if (list.length !== 0) {
             list.forEach((item) => {
@@ -433,7 +438,7 @@ function moveToFeedWin(iuser) {
                             if (myJson) {
                                 btnClose.click();
                                 const gData = document.querySelector('#gData');
-                                if (gData.dataset.toiuser !== gData.dataset.loginIuser) {
+                                if (gData.dataset.toiuser !== gData.dataset.loginiuser) {
                                     console.log('버그해결');
                                     return;
                                 }
