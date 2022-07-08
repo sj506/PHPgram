@@ -90,6 +90,13 @@ if (feedObj) {
   const changeBtn = document.querySelector('#changeBtn');
 
   imgUploadBtn.addEventListener('click', () => {
+    if (gData.dataset.loginiuser !== gData.dataset.toiuser) {
+      console.log(gData);
+      console.log(gData.dataset.loginiuser);
+      console.log(gData.dataset.toiuser);
+      alert('돌아가~');
+      return;
+    }
     updprofileImg.click();
   });
 
@@ -116,7 +123,7 @@ if (feedObj) {
             console.log(res);
             const profileImgList = document.querySelectorAll('.profileimg');
             profileImgList.forEach((item) => {
-              item.src = `/static/img/profile/${gData.dataset.toiuser}/${res.fileNm}`;
+              item.src = `/static/img/profile/${gData.dataset.loginiuser}/${res.fileNm}`;
             });
           });
         btnClose.click();

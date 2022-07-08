@@ -284,10 +284,51 @@ const feedObj = {
     const divDm = document.createElement('div');
     divBtns.appendChild(divDm);
     divDm.className = 'pointer';
-    divDm.innerHTML = `<svg aria-label="다이렉트 메시지" class="_8-yf5 " color="#262626" fill="#262626" height="24" role="img" viewBox="0 0 24 24" width="24"><line fill="none" stroke="currentColor" stroke-linejoin="round" stroke-width="2" x1="22" x2="9.218" y1="3" y2="10.083"></line><polygon fill="none" points="11.698 20.334 22 3.001 2 3.001 9.218 10.084 11.698 20.334" stroke="currentColor" stroke-linejoin="round" stroke-width="2"></polygon></svg>`;
+    divDm.innerHTML = `<svg aria-label="다이렉트 메시지" class="_8-yf5 " color="#262626" fill="#262626" height="24" role="img" viewBox="0 0 24 24" width="24">
+                      <line fill="none" stroke="currentColor" stroke-linejoin="round" stroke-width="2" x1="22" x2="9.218" y1="3" y2="10.083"></line>
+                      <polygon fill="none" points="11.698 20.334 22 3.001 2 3.001 9.218 10.084 11.698 20.334" stroke="currentColor" stroke-linejoin="round" stroke-width="2">
+                      </polygon>
+                      </svg>`;
     divDm.addEventListener('click', (e) => {
       location.href = `/dm/index?oppoiuser=${item.iuser}`;
     });
+
+    // 피드 삭제 드가자 ~
+    const feedDelDiv = document.createElement('div');
+    feedDelDiv.innerHTML = `
+                          <button class="feedDel">삭제</button>
+                          `;
+    divBtns.appendChild(feedDelDiv);
+
+    const feedDel = feedDelDiv.querySelector('.feedDel');
+    feedDel.addEventListener('click', function () {
+      const gData = document.querySelector('#gData');
+      if (parseInt(item.iuser) !== parseInt(gData.dataset.loginiuser)) {
+        alert('글쓴이가 아닙니다.');
+        return;
+      }
+
+      const param = {
+        ifeed: item.ifeed,
+        feediuser: item.iuser,
+        mainimg: item.imgList,
+      };
+      console.log(item.imgList);
+      console.log(param.mainimg);
+      console.log(JSON.stringify(param));
+      fetch('/feed/rest', {
+        method: 'DELETE',
+        body: JSON.stringify(param),
+      })
+        .then((res) => res.json())
+        .then((res) => {
+          console.log(res);
+          location.reload();
+        });
+    });
+
+    //피드 삭제 끝~
+
     const spanFavCnt = document.createElement('span');
     spanFavCnt.className = 'bold';
     spanFavCnt.innerHTML = `좋아요 ${item.favCnt}개`;
@@ -440,10 +481,7 @@ function moveToFeedWin(iuser) {
               if (myJson) {
                 btnClose.click();
                 const gData = document.querySelector('#gData');
-                if (gData.dataset.toiuser !== gData.dataset.loginiuser) {
-                  console.log('버그해결');
-                  return;
-                }
+                console.log(gData);
                 const feedItem = feedObj.makeFeedItem(myJson);
                 feedObj.containerElem.prepend(feedItem);
                 feedObj.refreshSwipe();
