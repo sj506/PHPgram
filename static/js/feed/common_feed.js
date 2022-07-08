@@ -131,12 +131,31 @@ const feedObj = {
                 <div class="me-2 pointer" onClick="moveToFeedWin(${item.iuser})">${item.writer} - <span class="rem0_8">${getDateTimeInfo(item.regdt)}</span></div>
                 <div>${item.cmt}</div>
             </div>
+            <button type="button" class="btn btn-sm" id="delcmtBtn">삭제</button>
         `;
     // const profimg = divCmtItemContainer.querySelector('img');
 
     // profimg.addEventListener('click', () => {
     //     moveToFeedWin(item.iuser);
     // });
+
+    const delcmtBtn = divCmtItemContainer.querySelector('#delcmtBtn');
+    const gData = document.querySelector('#gData');
+    if (parseInt(item.iuser) !== parseInt(gData.dataset.loginiuser)) {
+      delcmtBtn.classList.add('d-none');
+    }
+    delcmtBtn.addEventListener('click', function () {
+      // console.log(item.icmt);
+      fetch('/feedcmt/index', {
+        method: 'DELETE',
+        body: item.icmt,
+      })
+        .then((res) => res.json)
+        .then((res) => {
+          console.log(res);
+          divCmtItemContainer.innerHTML = null;
+        });
+    });
 
     return divCmtItemContainer;
   },
@@ -296,7 +315,7 @@ const feedObj = {
     // 피드 삭제 드가자 ~
     const feedDelDiv = document.createElement('div');
     feedDelDiv.innerHTML = `
-                          <button class="feedDel">삭제</button>
+                          <button class="feedDel btn btn-outline-dark btn-sm ml-10">삭제</button>
                           `;
     divBtns.appendChild(feedDelDiv);
 
@@ -304,6 +323,7 @@ const feedObj = {
     feedDel.addEventListener('click', function () {
       const gData = document.querySelector('#gData');
       if (parseInt(item.iuser) !== parseInt(gData.dataset.loginiuser)) {
+        console.log(gData);
         alert('글쓴이가 아닙니다.');
         return;
       }

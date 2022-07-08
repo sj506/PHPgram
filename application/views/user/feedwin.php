@@ -104,7 +104,7 @@
             </div>
             <div class="container-center">
                 <div class="profile_img circleimg h150 w150 pointer" data-bs-toggle="modal" data-bs-target="#profileImgModal">
-                    <img src="<?= getProfileImg() ?>" alt="프로필이미지">
+                    <img src="<?= getProfileImg() ?>" alt="프로필이미지" id="modProfileImg">
                 </div>
             </div>
             <div class="modal-body">

@@ -89,11 +89,12 @@ if (feedObj) {
   const frmElem = myfeedmodal.querySelector('form');
   const changeBtn = document.querySelector('#changeBtn');
 
+  const modProfileImg = document.querySelector('#modProfileImg');
+  modProfileImg.addEventListener('click', () => {
+    updprofileImg.click();
+  });
   imgUploadBtn.addEventListener('click', () => {
     if (gData.dataset.loginiuser !== gData.dataset.toiuser) {
-      console.log(gData);
-      console.log(gData.dataset.loginiuser);
-      console.log(gData.dataset.toiuser);
       alert('돌아가~');
       return;
     }
